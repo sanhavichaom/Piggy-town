@@ -22,7 +22,6 @@ public class IsometricGrid : MonoBehaviour
     [SerializeField] Color _whiteColor = Color.white;
     [SerializeField] Color _blueColor = Color.skyBlue;
 
-
     // Methods
 
     void Awake()
