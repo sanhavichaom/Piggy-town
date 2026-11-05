@@ -17,9 +17,11 @@ public class CraftingManager : MonoBehaviour
     [Header("References")]
     [SerializeField] InventoryManager _inventoryManager;
     [SerializeField] CraftingRecipeData _recipe;
+    public CraftingRecipeData Recipe { get { return _recipe; } }
 
     bool _isCrafting;
     public bool IsCrafting { get { return _isCrafting; } }
+
     DateTime _endTimeUtc;
 
     float _nextCheckTime;
