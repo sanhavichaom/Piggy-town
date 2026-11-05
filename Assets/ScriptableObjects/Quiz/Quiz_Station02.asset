@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84d3a2ee301b70444827114cfda046cd, type: 3}
+  m_Name: Quiz_Station02
+  m_EditorClassIdentifier: Assembly-CSharp::QuizData
+  _id: quiz.station02
+  _questions:
+  - _questionText: '1 + 1 = '
+    _options:
+    - 2
+    - 3
+    - 4
+    - 5
+    _correctAnswerIndex: 0
+  - _questionText: How many seconds are in 1 minutes
+    _options:
+    - 90
+    - 180
+    - 60
+    - 10
+    _correctAnswerIndex: 2
+  - _questionText: '5 + 5 = '
+    _options:
+    - 20
+    - 15
+    - 25
+    - 10
+    _correctAnswerIndex: 3
+  - _questionText: What color is Pikachu
+    _options:
+    - Black
+    - Yellow
+    - Pink
+    - Red
+    _correctAnswerIndex: 1
+  - _questionText: "What color is Doraemon\t"
+    _options:
+    - Blue
+    - Purple
+    - Brown
+    - Green
+    _correctAnswerIndex: 0

@@ -20,6 +20,7 @@ public class ObjectInteractionManager : MonoBehaviour
     [SerializeField] GridOccupancy _gridOccupancy;
     [SerializeField] PlacementManager _placementManager;
     [SerializeField] StationCraftingPanelUI _craftingPanel;
+    [SerializeField] StationQuizPanelUI _quizPanel;
 
     [Header("Long Press Settings")]
     [SerializeField] float _longPressDuration = 0.5f;
@@ -57,7 +58,11 @@ public class ObjectInteractionManager : MonoBehaviour
             screenPosition = touchscreen.primaryTouch.position.ReadValue();
         }
 
-        if (_craftingPanel != null && _craftingPanel.IsOpen)
+        bool isCraftingPanelOpen = _craftingPanel != null && _craftingPanel.IsOpen;
+
+        bool isQuizPanelOpen = _quizPanel != null && _quizPanel.IsOpen;
+
+        if (isCraftingPanelOpen || isQuizPanelOpen)
         {
             ResetPress();
             return;
@@ -71,13 +76,15 @@ public class ObjectInteractionManager : MonoBehaviour
 
                 float tapMovement = Vector2.Distance(_pressStartPosition, screenPosition);
 
-                if (tapDuration < _longPressDuration &&
-                    tapMovement <= _maxMovementPixels)
+                if (tapDuration < _longPressDuration && tapMovement <= _maxMovementPixels)
                 {
+                    bool opened = false;
+
                     if (_craftingPanel != null)
-                    {
-                        _craftingPanel.OpenFor(_candidateObject);
-                    }
+                        opened = _craftingPanel.OpenFor(_candidateObject);
+
+                    if (!opened && _quizPanel != null)
+                        _quizPanel.OpenFor(_candidateObject);
                 }
             }
 
