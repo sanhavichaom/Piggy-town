@@ -61,5 +61,8 @@ public class PlaceableObject : MonoBehaviour
     public void SetFlipped(bool isFlipped)
     {
         _isFlipped = isFlipped;
+
+        if (_spriteRenderer != null)
+            _spriteRenderer.flipX = _isFlipped;
     }
 }

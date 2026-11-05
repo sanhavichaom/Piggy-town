@@ -18,6 +18,10 @@ public class PlacementManager : MonoBehaviour
     [SerializeField] ZoneManager _zoneManager;
     [SerializeField] GridOccupancy _gridOccupancy;
 
+    [Header("UI")]
+    [SerializeField] RectTransform _placementPanel;
+    [SerializeField] ObjectPlacementControlsUI _placementControls;
+
     [Header("Placeable Object")]
     [SerializeField] PlaceableObject _placeablePrefab;
     [SerializeField] PlaceableObjectData _selectedData;
@@ -40,6 +44,8 @@ public class PlacementManager : MonoBehaviour
     bool _hasPreviewCell;
     bool _canPlaceHere;
     bool _isReady;
+    bool _isPlacing;
+    bool _isFlipped;
 
     // Methods
 
@@ -55,6 +61,12 @@ public class PlacementManager : MonoBehaviour
             return;
 
         if (_gridOccupancy == null)
+            return;
+
+        if (_placementPanel == null)
+            return;
+
+        if (_placementControls == null)
             return;
 
         if (_placeablePrefab == null)
@@ -74,24 +86,27 @@ public class PlacementManager : MonoBehaviour
 
     void Update()
     {
-        if (!_isReady)
+        if (!_isReady || !_isPlacing)
             return;
 
         Pointer pointer = Pointer.current;
 
-        if(pointer == null)
+        if (pointer == null)
         {
             HidePreview();
             return;
         }
 
         if (pointer is Touchscreen touchscreen && !touchscreen.primaryTouch.press.isPressed)
-        {
-            HidePreview();
             return;
-        }
 
-        Vector2 screenPosition = Pointer.current.position.ReadValue();
+        Vector2 screenPosition = pointer.position.ReadValue();
+
+        if (RectTransformUtility.RectangleContainsScreenPoint(_placementPanel, screenPosition))
+            return;
+
+        if (_placementControls.IsPointerOverButtons(screenPosition))
+            return;
 
         if (!_gameCamera.pixelRect.Contains(screenPosition))
         {
@@ -121,10 +136,15 @@ public class PlacementManager : MonoBehaviour
         if (_hasPreviewCell && originCell == _previewCell)
             return;
 
+        RefreshPreviewAtCell(originCell);
+    }
+
+    void RefreshPreviewAtCell(Vector2Int originCell)
+    {
         _previewCell = originCell;
         _hasPreviewCell = true;
 
-        Vector2Int footprint = _selectedData.GetFootprint(false);
+        Vector2Int footprint = _selectedData.GetFootprint(_isFlipped);
 
         bool isValidZone = _zoneManager.CanPlaceInZone(_selectedData.Category, originCell, footprint);
 
@@ -147,6 +167,8 @@ public class PlacementManager : MonoBehaviour
 
         _previewRenderer.transform.position = previewPosition;
         _previewRenderer.enabled = true;
+
+        _placementControls.ShowAtWorldPosition(previewPosition, _gameCamera);
     }
 
     void CreatePreview()
@@ -232,6 +254,77 @@ public class PlacementManager : MonoBehaviour
         }
     }
 
+    public void SelectObject(PlaceableObjectData data)
+    {
+        if (data == null || data.Sprite == null)
+            return;
+
+        HidePreview();
+
+        _selectedData = data;
+        _isFlipped = false;
+        _isPlacing = true;
+
+        if (_previewRenderer != null)
+        {
+            _previewRenderer.sprite = _selectedData.Sprite;
+            _previewRenderer.flipX = false;
+        }
+    }
+
+    public void CancelPlacement()
+    {
+        _isPlacing = false;
+
+        HidePreview();
+    }
+
+
+    public void ConfirmPlacement()
+    {
+        if (!_isReady || !_isPlacing)
+            return;
+
+        if (!_hasPreviewCell || !_canPlaceHere)
+            return;
+
+        Vector2Int originCell = _previewCell;
+        Vector2Int footprint = _selectedData.GetFootprint(_isFlipped);
+
+        bool isValidZone = _zoneManager.CanPlaceInZone(_selectedData.Category, originCell, footprint);
+
+        bool isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
+
+        if (!isValidZone || !isAreaFree)
+        {
+            HidePreview();
+            return;
+        }
+
+        Vector3 firstCellCenter = _floorTilemap.GetCellCenterWorld(new Vector3Int(originCell.x, originCell.y, 0));
+
+        Vector3 lastCellCenter = _floorTilemap.GetCellCenterWorld(new Vector3Int(originCell.x + footprint.x - 1, originCell.y + footprint.y - 1, 0));
+
+        Vector3 spawnPosition = (firstCellCenter + lastCellCenter) * 0.5f;
+
+        PlaceableObject placedObject = Instantiate(_placeablePrefab, spawnPosition, Quaternion.identity);
+
+        placedObject.Initialize(_selectedData, originCell);
+        placedObject.SetFlipped(_isFlipped);
+
+        if (!_gridOccupancy.TryOccupy(placedObject, originCell, footprint))
+        {
+            Destroy(placedObject.gameObject);
+
+            _hasPreviewCell = false;
+            return;
+        }
+
+        _isPlacing = false;
+
+        HidePreview();
+    }
+
     void HidePreview()
     {
         if (_previewRenderer != null)
@@ -242,8 +335,24 @@ public class PlacementManager : MonoBehaviour
 
         _hasPreviewCell = false;
         _canPlaceHere = false;
+
+        if (_placementControls != null)
+            _placementControls.Hide();
     }
 
+    public void FlipPlacement()
+    {
+        if (!_isReady || !_isPlacing)
+            return;
+
+        _isFlipped = !_isFlipped;
+
+        if (_previewRenderer != null)
+            _previewRenderer.flipX = _isFlipped;
+
+        if (_hasPreviewCell)
+            RefreshPreviewAtCell(_previewCell);
+    }
     void OnDisable()
     {
         HidePreview();
