@@ -2087,6 +2087,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ed69a7987494c0647ad9b2f710ac72aa, type: 2}
   _stationItems:
   - {fileID: 11400000, guid: 35299340536dbce48bd0a66a263e1b1b, type: 2}
+  - {fileID: 11400000, guid: 8ecf384d714b1d24f841b6f413928089, type: 2}
   _selectedNameText: {fileID: 2136232400}
   _selectedFootprintText: {fileID: 226480819}
 --- !u!114 &1081094401
@@ -2930,15 +2931,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ZoneManager
   _floorTilemap: {fileID: 2135119809}
   _furnitureZone:
-    x: 0
-    y: 0
-    width: 20
-    height: 20
-  _mixedZone:
     x: 20
     y: 20
     width: 10
     height: 10
+  _mixedZone:
+    x: 0
+    y: 0
+    width: 20
+    height: 20
   _furnitureColor: {r: 0.5411765, g: 0.1686275, b: 0.8862746, a: 1}
   _mixedColor: {r: 0.6784314, g: 1, b: 0.1843137, a: 1}
 --- !u!1 &2100535818

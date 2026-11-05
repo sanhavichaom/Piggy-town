@@ -120,4 +120,33 @@ public class GridOccupancy : MonoBehaviour
 
         _objectAreas.Remove(placeableObject);
     }
+
+    public bool HasPlacedStation(string stationId)
+    {
+        if (string.IsNullOrEmpty(stationId))
+            return false;
+
+        if (_objectAreas == null)
+            return false;
+
+        foreach (PlaceableObject placedObject in _objectAreas.Keys)
+        {
+            if (placedObject == null)
+                continue;
+
+            PlaceableObjectData data = placedObject.Data;
+
+            if (data == null)
+                continue;
+
+            if (data.Category != ZoneManager.PlaceableCategory.Station)
+                continue;
+
+            if (data.Id == stationId)
+                return true;
+        }
+
+        return false;
+    }
+
 }

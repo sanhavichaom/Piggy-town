@@ -150,7 +150,12 @@ public class PlacementManager : MonoBehaviour
 
         bool isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
 
-        _canPlaceHere = isValidZone && isAreaFree;
+        bool isStationAvailable = true;
+
+        if (_selectedData.Category == ZoneManager.PlaceableCategory.Station)
+            isStationAvailable = !_gridOccupancy.HasPlacedStation(_selectedData.Id);
+
+        _canPlaceHere = isValidZone && isAreaFree && isStationAvailable;
 
         if (_canPlaceHere)
             _previewRenderer.color = _validPreviewColor;
@@ -295,7 +300,12 @@ public class PlacementManager : MonoBehaviour
 
         bool isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
 
-        if (!isValidZone || !isAreaFree)
+        bool isStationAvailable = true;
+
+        if (_selectedData.Category == ZoneManager.PlaceableCategory.Station)
+            isStationAvailable = !_gridOccupancy.HasPlacedStation(_selectedData.Id);
+
+        if (!isValidZone || !isAreaFree || !isStationAvailable)
         {
             HidePreview();
             return;
