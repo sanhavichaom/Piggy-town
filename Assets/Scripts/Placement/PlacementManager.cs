@@ -45,7 +45,10 @@ public class PlacementManager : MonoBehaviour
     bool _canPlaceHere;
     bool _isReady;
     bool _isPlacing;
+    public bool IsPlacing { get { return _isPlacing; } }
     bool _isFlipped;
+
+    PlaceableObject _editingObject;
 
     // Methods
 
@@ -148,11 +151,16 @@ public class PlacementManager : MonoBehaviour
 
         bool isValidZone = _zoneManager.CanPlaceInZone(_selectedData.Category, originCell, footprint);
 
-        bool isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
+        bool isAreaFree;
+
+        if (_editingObject != null)
+            isAreaFree = _gridOccupancy.IsAreaFreeExcept(originCell, footprint, _editingObject);
+        else
+            isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
 
         bool isStationAvailable = true;
 
-        if (_selectedData.Category == ZoneManager.PlaceableCategory.Station)
+        if (_editingObject == null && _selectedData.Category == ZoneManager.PlaceableCategory.Station)
             isStationAvailable = !_gridOccupancy.HasPlacedStation(_selectedData.Id);
 
         _canPlaceHere = isValidZone && isAreaFree && isStationAvailable;
@@ -270,6 +278,9 @@ public class PlacementManager : MonoBehaviour
         if (data == null || data.Sprite == null)
             return;
 
+        if (_editingObject != null)
+            CancelPlacement();
+
         HidePreview();
 
         _selectedData = data;
@@ -285,8 +296,41 @@ public class PlacementManager : MonoBehaviour
         }
     }
 
+    public void BeginEdit(PlaceableObject placedObject)
+    {
+        if (!_isReady || _isPlacing || placedObject == null)
+            return;
+
+        PlaceableObjectData data = placedObject.Data;
+
+        if (data == null || data.Sprite == null)
+            return;
+
+        HidePreview();
+
+        _editingObject = placedObject;
+        _selectedData = data;
+        _isFlipped = placedObject.IsFlipped;
+        _isPlacing = true;
+
+        _previewRenderer.sprite = data.Sprite;
+        _previewRenderer.flipX = _isFlipped;
+
+        _previewRenderer.transform.localScale = Vector3.one * data.VisualScale;
+
+        placedObject.SetVisualVisible(false);
+
+        RefreshPreviewAtCell(placedObject.OriginCell);
+    }
+
     public void CancelPlacement()
     {
+        if (_editingObject != null)
+        {
+            _editingObject.SetVisualVisible(true);
+            _editingObject = null;
+        }
+
         _isPlacing = false;
 
         HidePreview();
@@ -306,16 +350,21 @@ public class PlacementManager : MonoBehaviour
 
         bool isValidZone = _zoneManager.CanPlaceInZone(_selectedData.Category, originCell, footprint);
 
-        bool isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
+        bool isAreaFree;
+
+        if (_editingObject != null)
+            isAreaFree = _gridOccupancy.IsAreaFreeExcept(originCell, footprint, _editingObject);
+        else
+            isAreaFree = _gridOccupancy.IsAreaFree(originCell, footprint);
 
         bool isStationAvailable = true;
 
-        if (_selectedData.Category == ZoneManager.PlaceableCategory.Station)
+        if (_editingObject == null && _selectedData.Category == ZoneManager.PlaceableCategory.Station)
             isStationAvailable = !_gridOccupancy.HasPlacedStation(_selectedData.Id);
 
         if (!isValidZone || !isAreaFree || !isStationAvailable)
         {
-            HidePreview();
+            RefreshPreviewAtCell(originCell);
             return;
         }
 
@@ -324,6 +373,13 @@ public class PlacementManager : MonoBehaviour
         Vector3 lastCellCenter = _floorTilemap.GetCellCenterWorld(new Vector3Int(originCell.x + footprint.x - 1, originCell.y + footprint.y - 1, 0));
 
         Vector3 spawnPosition = (firstCellCenter + lastCellCenter) * 0.5f;
+
+        if (_editingObject != null)
+        {
+            ConfirmEdit(originCell, footprint, spawnPosition);
+            return;
+        }
+
 
         PlaceableObject placedObject = Instantiate(_placeablePrefab, spawnPosition, Quaternion.identity);
 
@@ -338,6 +394,46 @@ public class PlacementManager : MonoBehaviour
             return;
         }
 
+        _isPlacing = false;
+
+        HidePreview();
+    }
+
+
+    void ConfirmEdit(Vector2Int newOriginCell, Vector2Int newFootprint, Vector3 newWorldPosition)
+    {
+        PlaceableObject placedObject = _editingObject;
+
+        Vector2Int oldOriginCell = placedObject.OriginCell;
+        Vector2Int oldFootprint = placedObject.Footprint;
+        Vector3 oldWorldPosition = placedObject.transform.position;
+        bool oldFlipped = placedObject.IsFlipped;
+
+        _gridOccupancy.Release(placedObject);
+
+        placedObject.SetOriginCell(newOriginCell);
+        placedObject.SetFlipped(_isFlipped);
+        placedObject.transform.position = newWorldPosition;
+        placedObject.RefreshSortingOrder();
+
+        bool success = _gridOccupancy.TryOccupy(placedObject, newOriginCell, newFootprint);
+
+        if (!success)
+        {
+            placedObject.SetOriginCell(oldOriginCell);
+            placedObject.SetFlipped(oldFlipped);
+            placedObject.transform.position = oldWorldPosition;
+            placedObject.RefreshSortingOrder();
+
+            bool restored = _gridOccupancy.TryOccupy(placedObject, oldOriginCell, oldFootprint);
+
+            if (!restored)
+                Debug.LogError("Failed to restore object occupancy.", placedObject);
+        }
+
+        placedObject.SetVisualVisible(true);
+
+        _editingObject = null;
         _isPlacing = false;
 
         HidePreview();
@@ -373,6 +469,14 @@ public class PlacementManager : MonoBehaviour
     }
     void OnDisable()
     {
+        if (_editingObject != null)
+        {
+            _editingObject.SetVisualVisible(true);
+            _editingObject = null;
+        }
+
+        _isPlacing = false;
+
         HidePreview();
     }
 }

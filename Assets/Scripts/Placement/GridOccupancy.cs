@@ -149,4 +149,47 @@ public class GridOccupancy : MonoBehaviour
         return false;
     }
 
+    public PlaceableObject GetObjectAtCell(Vector2Int cell)
+    {
+        if (!_isReady)
+            return null;
+
+        int gridX = cell.x - _minCell.x;
+        int gridY = cell.y - _minCell.y;
+
+        if (gridX < 0 || gridY < 0 || gridX >= _width || gridY >= _height)
+            return null;
+
+        return _occupiedCells[gridX, gridY];
+    }
+
+
+    public bool IsAreaFreeExcept(Vector2Int originCell,Vector2Int footprint,PlaceableObject ignoredObject)
+    {
+        if (!_isReady)
+            return false;
+
+        if (footprint.x <= 0 || footprint.y <= 0)
+            return false;
+
+        for (int x = 0; x < footprint.x; x++)
+        {
+            for (int y = 0; y < footprint.y; y++)
+            {
+                int gridX = originCell.x + x - _minCell.x;
+                int gridY = originCell.y + y - _minCell.y;
+
+                if (gridX < 0 || gridY < 0 || gridX >= _width || gridY >= _height)
+                    return false;
+
+                PlaceableObject occupiedObject = _occupiedCells[gridX, gridY];
+
+                if (occupiedObject != null && occupiedObject != ignoredObject)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
 }

@@ -92,4 +92,11 @@ public class PlaceableObject : MonoBehaviour
         if (_spriteRenderer != null)
             _spriteRenderer.flipX = _isFlipped;
     }
+    public void SetVisualVisible(bool isVisible)
+    {
+        if (_spriteRenderer == null)
+            return;
+
+        _spriteRenderer.enabled = isVisible;
+    }
 }
