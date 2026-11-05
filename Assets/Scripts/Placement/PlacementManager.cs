@@ -170,7 +170,13 @@ public class PlacementManager : MonoBehaviour
 
         Vector3 previewPosition = (firstCellCenter + lastCellCenter) * 0.5f;
 
-        _previewRenderer.transform.position = previewPosition;
+        Vector3 visualPosition = previewPosition + new Vector3(_selectedData.VisualOffset.x, _selectedData.VisualOffset.y, 0f);
+
+        _previewRenderer.transform.position = visualPosition;
+        _previewRenderer.transform.localScale = Vector3.one * _selectedData.VisualScale;
+
+        _previewRenderer.sortingOrder = PlaceableObject.CalculateSortingOrder(previewPosition.y);
+
         _previewRenderer.enabled = true;
 
         _placementControls.ShowAtWorldPosition(previewPosition, _gameCamera);
@@ -184,7 +190,7 @@ public class PlacementManager : MonoBehaviour
 
         _previewRenderer = previewObject.AddComponent<SpriteRenderer>();
 
-        SpriteRenderer prefabRenderer = _placeablePrefab.GetComponent<SpriteRenderer>();
+        SpriteRenderer prefabRenderer = _placeablePrefab.GetComponentInChildren<SpriteRenderer>();
 
         _previewRenderer.sprite = _selectedData.Sprite;
 
@@ -274,6 +280,8 @@ public class PlacementManager : MonoBehaviour
         {
             _previewRenderer.sprite = _selectedData.Sprite;
             _previewRenderer.flipX = false;
+
+            _previewRenderer.transform.localScale = Vector3.one * _selectedData.VisualScale;
         }
     }
 

@@ -29,6 +29,12 @@ public class PlaceableObjectData : ScriptableObject
     [SerializeField] Vector2Int _footprint = Vector2Int.one;
     public Vector2Int Footprint { get { return _footprint; } }
 
+    [Header("Visual Settings")]
+    [SerializeField] Vector2 _visualOffset = Vector2.zero;
+    public Vector2 VisualOffset { get { return _visualOffset; } }
+    [SerializeField] float _visualScale = 1f;
+    public float VisualScale { get { return _visualScale; } }
+
     // Methods
 
     public Vector2Int GetFootprint(bool isFlipped)
@@ -43,5 +49,6 @@ public class PlaceableObjectData : ScriptableObject
     {
         _footprint.x = Mathf.Max(1, _footprint.x);
         _footprint.y = Mathf.Max(1, _footprint.y);
+        _visualScale = Mathf.Max(0.01f, _visualScale);
     }
 }

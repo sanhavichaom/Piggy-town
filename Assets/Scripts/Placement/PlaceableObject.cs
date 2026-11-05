@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class PlaceableObject : MonoBehaviour
 {
     // Constants
+
+    const float SORTING_ORDER_PER_WORLD_UNIT = 100f;
 
     // Local classes / structs
 
@@ -16,7 +16,7 @@ public class PlaceableObject : MonoBehaviour
 
     public PlaceableObjectData Data { get { return _data; } }
 
-    SpriteRenderer _spriteRenderer;
+    [SerializeField] SpriteRenderer _spriteRenderer;
 
     Vector2Int _originCell;
     public Vector2Int OriginCell { get { return _originCell; } }
@@ -37,10 +37,6 @@ public class PlaceableObject : MonoBehaviour
     }
 
     // Methods
-    void Awake()
-    {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-    }
 
     public void Initialize(PlaceableObjectData data, Vector2Int originCell)
     {
@@ -52,6 +48,37 @@ public class PlaceableObject : MonoBehaviour
         _isFlipped = false;
 
         _spriteRenderer.sprite = _data.Sprite;
+
+        ApplyVisualSettings();
+        RefreshSortingOrder();
+    }
+
+    void ApplyVisualSettings()
+    {
+        if (_data == null || _spriteRenderer == null)
+            return;
+
+        Transform visualTransform = _spriteRenderer.transform;
+
+        visualTransform.localPosition = new Vector3(_data.VisualOffset.x, _data.VisualOffset.y, 0f);
+
+        visualTransform.localScale = Vector3.one * _data.VisualScale;
+    }
+
+
+    public static int CalculateSortingOrder(float worldY)
+    {
+        int sortingOrder = Mathf.RoundToInt(-worldY * SORTING_ORDER_PER_WORLD_UNIT);
+
+        return sortingOrder;
+    }
+
+    public void RefreshSortingOrder()
+    {
+        if (_spriteRenderer == null)
+            return;
+
+        _spriteRenderer.sortingOrder = CalculateSortingOrder(transform.position.y);
     }
 
     public void SetOriginCell(Vector2Int originCell)
