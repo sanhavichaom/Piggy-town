@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0972e2be60a7593479e1bbbdf9fd9d23, type: 3}
+  m_Name: Crafting_01
+  m_EditorClassIdentifier: Assembly-CSharp::CraftingRecipeData
+  _id: recipe.tool
+  _displayName: Craft Tool
+  _inputItem1: {fileID: 11400000, guid: b5a7c597ba54ecc429f910ca0ce8a8f0, type: 2}
+  _inputAmount1: 1
+  _inputItem2: {fileID: 11400000, guid: 02e2afe3a6b97874a918a1df7f905289, type: 2}
+  _inputAmount2: 1
+  _outputItem: {fileID: 11400000, guid: 48e9b0fb702eb6d4aa44a44ea298a15e, type: 2}
+  _outputAmount: 1
+  _durationSeconds: 180
