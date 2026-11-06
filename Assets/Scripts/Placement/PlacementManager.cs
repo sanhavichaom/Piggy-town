@@ -106,7 +106,7 @@ public class PlacementManager : MonoBehaviour
 
         Vector2 screenPosition = pointer.position.ReadValue();
 
-        if (RectTransformUtility.RectangleContainsScreenPoint(_placementPanel, screenPosition))
+        if (_placementPanel.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_placementPanel, screenPosition))
             return;
 
         if (_placementControls.IsPointerOverButtons(screenPosition))
@@ -294,6 +294,8 @@ public class PlacementManager : MonoBehaviour
             _previewRenderer.flipX = false;
 
             _previewRenderer.transform.localScale = Vector3.one * _selectedData.VisualScale;
+
+            SetPlacementPanelVisible(false);
         }
     }
 
@@ -322,6 +324,8 @@ public class PlacementManager : MonoBehaviour
         placedObject.SetVisualVisible(false);
 
         RefreshPreviewAtCell(placedObject.OriginCell);
+
+        SetPlacementPanelVisible(false);
     }
 
     public void CancelPlacement()
@@ -335,6 +339,8 @@ public class PlacementManager : MonoBehaviour
         _isPlacing = false;
 
         HidePreview();
+
+        SetPlacementPanelVisible(true);
     }
 
     public void ConfirmPlacement()
@@ -398,6 +404,8 @@ public class PlacementManager : MonoBehaviour
 
         HidePreview();
 
+        SetPlacementPanelVisible(true);
+
         if (_worldSaveManager != null)
             _worldSaveManager.SaveWorld();
     }
@@ -440,6 +448,8 @@ public class PlacementManager : MonoBehaviour
         _isPlacing = false;
 
         HidePreview();
+
+        SetPlacementPanelVisible(true);
 
         if (success && _worldSaveManager != null)
             _worldSaveManager.SaveWorld();
@@ -484,5 +494,20 @@ public class PlacementManager : MonoBehaviour
         _isPlacing = false;
 
         HidePreview();
+    }
+    void SetPlacementPanelVisible(bool visible)
+    {
+        if (_placementPanel != null)
+            _placementPanel.gameObject.SetActive(visible);
+    }
+
+    public void TogglePlacementPanel()
+    {
+        if (_isPlacing || _placementPanel == null)
+            return;
+
+        bool isVisible = _placementPanel.gameObject.activeSelf;
+
+        SetPlacementPanelVisible(!isVisible);
     }
 }
