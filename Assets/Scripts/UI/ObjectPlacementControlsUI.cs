@@ -66,11 +66,7 @@ public class ObjectPlacementControlsUI : MonoBehaviour
 
         Vector2 localPosition;
 
-        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _canvasRect,
-            new Vector2(screenPosition.x, screenPosition.y),
-            null,
-            out localPosition))
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(_canvasRect, new Vector2(screenPosition.x, screenPosition.y), null, out localPosition))
         {
             Hide();
             return;
@@ -79,17 +75,9 @@ public class ObjectPlacementControlsUI : MonoBehaviour
         float halfWidth = _controlsRect.rect.width * 0.5f;
         float halfHeight = _controlsRect.rect.height * 0.5f;
 
-        localPosition.x = Mathf.Clamp(
-            localPosition.x,
-            _canvasRect.rect.xMin + halfWidth,
-            _canvasRect.rect.xMax - halfWidth
-        );
+        localPosition.x = Mathf.Clamp(localPosition.x, _canvasRect.rect.xMin + halfWidth, _canvasRect.rect.xMax - halfWidth);
 
-        localPosition.y = Mathf.Clamp(
-            localPosition.y,
-            _canvasRect.rect.yMin + halfHeight,
-            _canvasRect.rect.yMax - halfHeight
-        );
+        localPosition.y = Mathf.Clamp(localPosition.y, _canvasRect.rect.yMin + halfHeight, _canvasRect.rect.yMax - halfHeight);
 
         _controlsRect.anchoredPosition = localPosition;
 

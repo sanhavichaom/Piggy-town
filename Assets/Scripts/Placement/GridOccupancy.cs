@@ -164,7 +164,6 @@ public class GridOccupancy : MonoBehaviour
         return _occupiedCells[gridX, gridY];
     }
 
-
     public bool IsAreaFreeExcept(Vector2Int originCell, Vector2Int footprint, PlaceableObject ignoredObject)
     {
         if (!_isReady)
@@ -192,5 +191,4 @@ public class GridOccupancy : MonoBehaviour
 
         return true;
     }
-
 }

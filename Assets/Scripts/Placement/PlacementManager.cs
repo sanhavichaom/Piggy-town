@@ -337,7 +337,6 @@ public class PlacementManager : MonoBehaviour
         HidePreview();
     }
 
-
     public void ConfirmPlacement()
     {
         if (!_isReady || !_isPlacing)

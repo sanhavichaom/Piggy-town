@@ -16,12 +16,11 @@ public class ZoneManager : MonoBehaviour
         Mixed
     }
 
-    public enum PlaceableCategory 
+    public enum PlaceableCategory
     {
         Furniture,
         Station
     }
-
 
     // Variables
 
@@ -136,7 +135,6 @@ public class ZoneManager : MonoBehaviour
 
         DrawZoneOutline(_furnitureZone, Color.blue);
         DrawZoneOutline(_mixedZone, Color.green);
-
     }
 
     void DrawZoneOutline(RectInt zone, Color color)
@@ -144,24 +142,19 @@ public class ZoneManager : MonoBehaviour
         if (zone.width <= 0 || zone.height <= 0)
             return;
 
-        Vector3 a = _floorTilemap.CellToWorld(
-            new Vector3Int(zone.xMin, zone.yMin, 0));
+        Vector3 a = _floorTilemap.CellToWorld(new Vector3Int(zone.xMin, zone.yMin, 0));
 
-        Vector3 b = _floorTilemap.CellToWorld(
-            new Vector3Int(zone.xMax, zone.yMin, 0));
+        Vector3 b = _floorTilemap.CellToWorld(new Vector3Int(zone.xMax, zone.yMin, 0));
 
-        Vector3 c = _floorTilemap.CellToWorld(
-            new Vector3Int(zone.xMax, zone.yMax, 0));
+        Vector3 c = _floorTilemap.CellToWorld(new Vector3Int(zone.xMax, zone.yMax, 0));
 
-        Vector3 d = _floorTilemap.CellToWorld(
-            new Vector3Int(zone.xMin, zone.yMax, 0));
+        Vector3 d = _floorTilemap.CellToWorld(new Vector3Int(zone.xMin, zone.yMax, 0));
 
         Gizmos.color = color;
         Gizmos.DrawLine(a, b);
         Gizmos.DrawLine(b, c);
         Gizmos.DrawLine(c, d);
         Gizmos.DrawLine(d, a);
-
     }
 #endif
 }

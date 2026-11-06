@@ -65,7 +65,6 @@ public class PlaceableObject : MonoBehaviour
         visualTransform.localScale = Vector3.one * _data.VisualScale;
     }
 
-
     public static int CalculateSortingOrder(float worldY)
     {
         int sortingOrder = Mathf.RoundToInt(-worldY * SORTING_ORDER_PER_WORLD_UNIT);

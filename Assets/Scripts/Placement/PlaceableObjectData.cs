@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 [CreateAssetMenu(fileName = "PlaceableObject", menuName = "PiggyTown/Placeable Object")]
 public class PlaceableObjectData : ScriptableObject
@@ -7,7 +6,6 @@ public class PlaceableObjectData : ScriptableObject
     // Constants
 
     // Local classes / structs
-
 
     // Enums
 
