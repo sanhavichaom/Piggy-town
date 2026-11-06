@@ -5,9 +5,6 @@ public class CraftingManager : MonoBehaviour
 {
     // Constants
 
-    const string CRAFT_END_KEY = "PiggyTown.Crafting.EndTime";
-    const string CRAFT_RECIPE_KEY = "PiggyTown.Crafting.Recipe";
-
     // Local classes / structs
 
     // Enums
@@ -19,24 +16,33 @@ public class CraftingManager : MonoBehaviour
     [SerializeField] CraftingRecipeData _recipe;
     public CraftingRecipeData Recipe { get { return _recipe; } }
 
-    bool _isCrafting;
-    public bool IsCrafting { get { return _isCrafting; } }
-
-    DateTime _endTimeUtc;
-
     float _nextCheckTime;
 
+
+    public bool IsCrafting
+    {
+        get
+        {
+            if (_inventoryManager == null || _recipe == null)
+                return false;
+
+            return _inventoryManager.IsCraftActive(_recipe.Id);
+        }
+    }
 
     public int RemainingSeconds
     {
         get
         {
-            if (!_isCrafting)
+            if (!IsCrafting)
                 return 0;
 
-            double seconds = (_endTimeUtc - DateTime.UtcNow).TotalSeconds;
+            long remainingTicks = _inventoryManager.CraftEndUtcTicks - DateTime.UtcNow.Ticks;
 
-            return Mathf.Max(0, Mathf.CeilToInt((float)seconds));
+            if (remainingTicks <= 0)
+                return 0;
+
+            return (int)Math.Ceiling(remainingTicks / (double)TimeSpan.TicksPerSecond);
         }
     }
 
@@ -44,22 +50,26 @@ public class CraftingManager : MonoBehaviour
 
     void Start()
     {
-        if (_inventoryManager == null || _recipe == null)
+        if (_inventoryManager == null || _recipe == null || string.IsNullOrEmpty(_recipe.Id))
         {
-            Debug.LogError("Crafting Manager references are missing.", this);
             enabled = false;
             return;
         }
 
-        LoadCraftingProgress();
+        if (!string.IsNullOrEmpty(_inventoryManager.ActiveRecipeId) &&
+            !IsCrafting)
+        {
+            Debug.LogError("Saved crafting recipe ID does not match.", this);
+
+            enabled = false;
+            return;
+        }
+
         CheckCraftCompletion();
     }
 
     void Update()
     {
-        if (!_isCrafting)
-            return;
-
         if (Time.unscaledTime < _nextCheckTime)
             return;
 
@@ -73,87 +83,31 @@ public class CraftingManager : MonoBehaviour
         if (!enabled || _inventoryManager == null || _recipe == null)
             return false;
 
-        if (_isCrafting)
-            return false;
-
-        if (_recipe.DurationSeconds <= 0 || _recipe.OutputAmount <= 0)
-            return false;
-
-        if (string.IsNullOrEmpty(_recipe.Id))
-            return false;
-
-        if (!_inventoryManager.TryConsumeIngredients(_recipe))
-            return false;
-
-        _endTimeUtc = DateTime.UtcNow.AddSeconds(_recipe.DurationSeconds);
-
-        _isCrafting = true;
-        _nextCheckTime = 0f;
-
-        PlayerPrefs.SetString(CRAFT_END_KEY, _endTimeUtc.Ticks.ToString());
-
-        PlayerPrefs.SetString(CRAFT_RECIPE_KEY, _recipe.Id);
-
-        PlayerPrefs.Save();
-
-        Debug.Log("Crafting started: " + _recipe.DisplayName);
-
-        return true;
+        return _inventoryManager.TryBeginCraft(_recipe);
     }
 
     void CheckCraftCompletion()
     {
-        if (!_isCrafting)
+        if (!IsCrafting)
             return;
 
-        if (DateTime.UtcNow < _endTimeUtc)
+        if (RemainingSeconds > 0)
             return;
 
-        _isCrafting = false;
-
-        _inventoryManager.AddItem(_recipe.OutputItem, _recipe.OutputAmount);
-
-        PlayerPrefs.DeleteKey(CRAFT_END_KEY);
-        PlayerPrefs.DeleteKey(CRAFT_RECIPE_KEY);
-        PlayerPrefs.Save();
-
-        Debug.Log("Crafting completed: " + _recipe.DisplayName);
+        _inventoryManager.TryCompleteCraft(_recipe);
     }
 
-    void LoadCraftingProgress()
-    {
-        string savedTime = PlayerPrefs.GetString(CRAFT_END_KEY, "");
-
-        string savedRecipeId = PlayerPrefs.GetString(CRAFT_RECIPE_KEY, "");
-
-        if (savedRecipeId != _recipe.Id)
-            return;
-
-        if (!long.TryParse(savedTime, out long ticks))
-            return;
-
-        _endTimeUtc = new DateTime(ticks, DateTimeKind.Utc);
-        _isCrafting = true;
-    }
-
+#if UNITY_EDITOR
     [ContextMenu("Start Craft (Test)")]
     void TestStartCraft()
     {
-        bool started = TryStartCraft();
-
-        if (!started)
-            Debug.Log("Cannot start crafting. Check inventory or active craft.");
+        Debug.Log("Start Craft: " + TryStartCraft());
     }
 
     [ContextMenu("Show Craft Status (Test)")]
     void TestShowStatus()
     {
-        if (!_isCrafting)
-        {
-            Debug.Log("No active crafting.");
-            return;
-        }
-
-        Debug.Log("Crafting remaining: " + RemainingSeconds + " seconds");
+        Debug.Log("Crafting: " + IsCrafting + " | Remaining: " + RemainingSeconds);
     }
+#endif
 }

@@ -17,6 +17,7 @@ public class PlacementManager : MonoBehaviour
     [SerializeField] Tilemap _floorTilemap;
     [SerializeField] ZoneManager _zoneManager;
     [SerializeField] GridOccupancy _gridOccupancy;
+    [SerializeField] WorldSaveManager _worldSaveManager;
 
     [Header("UI")]
     [SerializeField] RectTransform _placementPanel;
@@ -397,6 +398,9 @@ public class PlacementManager : MonoBehaviour
         _isPlacing = false;
 
         HidePreview();
+
+        if (_worldSaveManager != null)
+            _worldSaveManager.SaveWorld();
     }
 
 
@@ -437,6 +441,9 @@ public class PlacementManager : MonoBehaviour
         _isPlacing = false;
 
         HidePreview();
+
+        if (success && _worldSaveManager != null)
+            _worldSaveManager.SaveWorld();
     }
 
     void HidePreview()

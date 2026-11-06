@@ -16,6 +16,7 @@ public class StationBuildDestroyManager : MonoBehaviour
     [SerializeField] PlaceableObjectData _station03Data;
     [SerializeField] GridOccupancy _gridOccupancy;
     [SerializeField] PlacementManager _placementManager;
+    [SerializeField] WorldSaveManager _worldSaveManager;
 
     [Header("Station Panel")]
     [SerializeField] GameObject _stationPanel;
@@ -48,7 +49,8 @@ public class StationBuildDestroyManager : MonoBehaviour
             _placementManager == null || _stationPanel == null ||
             _buildButton == null || _destroyButton == null ||
             _closeButton == null || _destroyModeBar == null ||
-            _destroyModeText == null || _cancelDestroyButton == null)
+            _destroyModeText == null || _cancelDestroyButton == null ||
+            _worldSaveManager == null)
         {
             Debug.LogError("Station 03 references are missing.", this);
             enabled = false;
@@ -116,6 +118,9 @@ public class StationBuildDestroyManager : MonoBehaviour
         Destroy(target.gameObject);
 
         CancelDestroyMode();
+
+        if (_worldSaveManager != null)
+            _worldSaveManager.SaveWorld();
 
         return true;
     }

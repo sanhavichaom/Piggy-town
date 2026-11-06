@@ -1441,6 +1441,7 @@ MonoBehaviour:
   _floorTilemap: {fileID: 2135119809}
   _zoneManager: {fileID: 1978112434}
   _gridOccupancy: {fileID: 862091618}
+  _worldSaveManager: {fileID: 1098355711}
   _placementPanel: {fileID: 1081094399}
   _placementControls: {fileID: 649112177}
   _placeablePrefab: {fileID: 9036204653097540268, guid: 9bd365d196211d4489fdaf4217d42f02, type: 3}
@@ -4986,6 +4987,15 @@ MonoBehaviour:
   _itemsScrollRect: {fileID: 499881162}
   _furnitureItems:
   - {fileID: 11400000, guid: ed69a7987494c0647ad9b2f710ac72aa, type: 2}
+  - {fileID: 11400000, guid: 68bb9a744af2b264fb7b684d92009f99, type: 2}
+  - {fileID: 11400000, guid: e4351e83ad1dda741a111cb61e85d81c, type: 2}
+  - {fileID: 11400000, guid: 45c5f2d01a335794b98638718a1e67da, type: 2}
+  - {fileID: 11400000, guid: cd788169e22c83940a6d04f67425ec9e, type: 2}
+  - {fileID: 11400000, guid: 7418382bc630385428a56bd46f5724ef, type: 2}
+  - {fileID: 11400000, guid: 235365395400ec4418cd66facedee220, type: 2}
+  - {fileID: 11400000, guid: 9a093ae6e1eff4249ad3058dd4d16231, type: 2}
+  - {fileID: 11400000, guid: 00804f97f58e79c4d86f7f97c74f572a, type: 2}
+  - {fileID: 11400000, guid: 6cc4427d6f8148744afdfee4bed7ee6e, type: 2}
   _stationItems:
   - {fileID: 11400000, guid: 35299340536dbce48bd0a66a263e1b1b, type: 2}
   - {fileID: 11400000, guid: 8ecf384d714b1d24f841b6f413928089, type: 2}
@@ -5030,6 +5040,68 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1081094398}
   m_CullTransparentMesh: 1
+--- !u!1 &1098355710
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1098355712}
+  - component: {fileID: 1098355711}
+  m_Layer: 0
+  m_Name: WorldSaveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1098355711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098355710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9175c68a91cb58c4a8df083f6510b8f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WorldSaveManager
+  _floorTilemap: {fileID: 2135119809}
+  _gridOccupancy: {fileID: 862091618}
+  _zoneManager: {fileID: 1978112434}
+  _placeablePrefab: {fileID: 9036204653097540268, guid: 9bd365d196211d4489fdaf4217d42f02, type: 3}
+  _objectDatabase:
+  - {fileID: 11400000, guid: ed69a7987494c0647ad9b2f710ac72aa, type: 2}
+  - {fileID: 11400000, guid: 68bb9a744af2b264fb7b684d92009f99, type: 2}
+  - {fileID: 11400000, guid: e4351e83ad1dda741a111cb61e85d81c, type: 2}
+  - {fileID: 11400000, guid: 45c5f2d01a335794b98638718a1e67da, type: 2}
+  - {fileID: 11400000, guid: cd788169e22c83940a6d04f67425ec9e, type: 2}
+  - {fileID: 11400000, guid: 7418382bc630385428a56bd46f5724ef, type: 2}
+  - {fileID: 11400000, guid: 235365395400ec4418cd66facedee220, type: 2}
+  - {fileID: 11400000, guid: 9a093ae6e1eff4249ad3058dd4d16231, type: 2}
+  - {fileID: 11400000, guid: 00804f97f58e79c4d86f7f97c74f572a, type: 2}
+  - {fileID: 11400000, guid: 6cc4427d6f8148744afdfee4bed7ee6e, type: 2}
+  - {fileID: 11400000, guid: 35299340536dbce48bd0a66a263e1b1b, type: 2}
+  - {fileID: 11400000, guid: 8ecf384d714b1d24f841b6f413928089, type: 2}
+  - {fileID: 11400000, guid: 8eba6ab52028c9a459d43ef8f5526e2e, type: 2}
+--- !u!4 &1098355712
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1098355710}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1172097116
 GameObject:
   m_ObjectHideFlags: 0
@@ -5973,6 +6045,7 @@ MonoBehaviour:
   _station03Data: {fileID: 11400000, guid: 8eba6ab52028c9a459d43ef8f5526e2e, type: 2}
   _gridOccupancy: {fileID: 862091618}
   _placementManager: {fileID: 424378232}
+  _worldSaveManager: {fileID: 1098355711}
   _stationPanel: {fileID: 1407543026}
   _buildButton: {fileID: 1235795956}
   _destroyButton: {fileID: 809663321}
@@ -8476,3 +8549,4 @@ SceneRoots:
   - {fileID: 531770067}
   - {fileID: 1015575028}
   - {fileID: 1455281857}
+  - {fileID: 1098355712}

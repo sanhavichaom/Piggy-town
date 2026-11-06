@@ -18,6 +18,7 @@ public class GridOccupancy : MonoBehaviour
     PlaceableObject[,] _occupiedCells;
 
     Dictionary<PlaceableObject, RectInt> _objectAreas = new Dictionary<PlaceableObject, RectInt>();
+    public IEnumerable<PlaceableObject> PlacedObjects { get { return _objectAreas.Keys; } }
 
     Vector2Int _minCell;
     int _width;
@@ -164,7 +165,7 @@ public class GridOccupancy : MonoBehaviour
     }
 
 
-    public bool IsAreaFreeExcept(Vector2Int originCell,Vector2Int footprint,PlaceableObject ignoredObject)
+    public bool IsAreaFreeExcept(Vector2Int originCell, Vector2Int footprint, PlaceableObject ignoredObject)
     {
         if (!_isReady)
             return false;

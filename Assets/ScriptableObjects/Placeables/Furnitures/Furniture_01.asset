@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: Furniture_01
   m_EditorClassIdentifier: Assembly-CSharp::PlaceableObjectData
   _id: furniture.01
-  _displayName: Bed
+  _displayName: Fence
   _category: 0
-  _sprite: {fileID: 8288426215254106694, guid: 6af122eda05845c438efaea64fb84804, type: 3}
+  _sprite: {fileID: -855298285791758126, guid: 735caef8e56efb546b4b008b0a13ce49, type: 3}
   _footprint: {x: 8, y: 5}
+  _visualOffset: {x: 0, y: 0}
+  _visualScale: 1
