@@ -51,6 +51,9 @@ public class PlacementManager : MonoBehaviour
 
     PlaceableObject _editingObject;
 
+    Vector2 _selectionPointerPosition;
+    bool _ignoreSelectionPointer;
+
     // Methods
 
     void Start()
@@ -105,6 +108,16 @@ public class PlacementManager : MonoBehaviour
             return;
 
         Vector2 screenPosition = pointer.position.ReadValue();
+
+        if (_ignoreSelectionPointer)
+        {
+            float pointerMovement = Vector2.Distance(_selectionPointerPosition, screenPosition);
+
+            if (pointerMovement < 12f)
+                return;
+
+            _ignoreSelectionPointer = false;
+        }
 
         if (_placementPanel.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_placementPanel, screenPosition))
             return;
@@ -274,9 +287,10 @@ public class PlacementManager : MonoBehaviour
         }
     }
 
+
     public void SelectObject(PlaceableObjectData data)
     {
-        if (data == null || data.Sprite == null)
+        if (!_isReady || data == null || data.Sprite == null)
             return;
 
         if (_editingObject != null)
@@ -288,15 +302,23 @@ public class PlacementManager : MonoBehaviour
         _isFlipped = false;
         _isPlacing = true;
 
-        if (_previewRenderer != null)
+        _previewRenderer.sprite = data.Sprite;
+        _previewRenderer.flipX = false;
+        _previewRenderer.transform.localScale = Vector3.one * data.VisualScale;
+
+        SetPlacementPanelVisible(false);
+
+        Pointer pointer = Pointer.current;
+
+        if (pointer != null)
         {
-            _previewRenderer.sprite = _selectedData.Sprite;
-            _previewRenderer.flipX = false;
-
-            _previewRenderer.transform.localScale = Vector3.one * _selectedData.VisualScale;
-
-            SetPlacementPanelVisible(false);
+            _selectionPointerPosition = pointer.position.ReadValue();
+            _ignoreSelectionPointer = true;
         }
+        else
+            _ignoreSelectionPointer = false;
+
+        ShowInitialPreview();
     }
 
     public void BeginEdit(PlaceableObject placedObject)
@@ -509,5 +531,74 @@ public class PlacementManager : MonoBehaviour
         bool isVisible = _placementPanel.gameObject.activeSelf;
 
         SetPlacementPanelVisible(!isVisible);
+    }
+
+    void ShowInitialPreview()
+    {
+        BoundsInt bounds = _floorTilemap.cellBounds;
+        Vector2Int footprint = _selectedData.GetFootprint(_isFlipped);
+
+        int maxX = bounds.xMax - footprint.x;
+        int maxY = bounds.yMax - footprint.y;
+
+        if (maxX < bounds.xMin || maxY < bounds.yMin)
+            return;
+
+        Vector2Int centerCell = new Vector2Int(bounds.xMin + (bounds.size.x - footprint.x) / 2, bounds.yMin + (bounds.size.y - footprint.y) / 2);
+
+        Vector2Int nearestValidCell = centerCell;
+        Vector2Int nearestFloorCell = centerCell;
+
+        int nearestValidDistance = int.MaxValue;
+        int nearestFloorDistance = int.MaxValue;
+
+        bool foundValidCell = false;
+        bool foundFloorCell = false;
+
+        bool stationAlreadyPlaced = _selectedData.Category == ZoneManager.PlaceableCategory.Station && _gridOccupancy.HasPlacedStation(_selectedData.Id);
+
+        for (int y = bounds.yMin; y <= maxY; y++)
+        {
+            for (int x = bounds.xMin; x <= maxX; x++)
+            {
+                Vector3Int tileCell = new Vector3Int(x, y, 0);
+
+                if (!_floorTilemap.HasTile(tileCell))
+                    continue;
+
+                Vector2Int cell = new Vector2Int(x, y);
+
+                int distanceX = x - centerCell.x;
+                int distanceY = y - centerCell.y;
+
+                int distance = distanceX * distanceX + distanceY * distanceY;
+
+                if (distance < nearestFloorDistance)
+                {
+                    nearestFloorDistance = distance;
+                    nearestFloorCell = cell;
+                    foundFloorCell = true;
+                }
+
+                if (stationAlreadyPlaced || distance >= nearestValidDistance)
+                    continue;
+
+                if (!_zoneManager.CanPlaceInZone(
+                    _selectedData.Category, cell, footprint))
+                    continue;
+
+                if (!_gridOccupancy.IsAreaFree(cell, footprint))
+                    continue;
+
+                nearestValidDistance = distance;
+                nearestValidCell = cell;
+                foundValidCell = true;
+            }
+        }
+
+        if (foundValidCell)
+            RefreshPreviewAtCell(nearestValidCell);
+        else if (foundFloorCell)
+            RefreshPreviewAtCell(nearestFloorCell);
     }
 }
