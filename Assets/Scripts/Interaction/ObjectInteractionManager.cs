@@ -21,6 +21,7 @@ public class ObjectInteractionManager : MonoBehaviour
     [SerializeField] PlacementManager _placementManager;
     [SerializeField] StationCraftingPanelUI _craftingPanel;
     [SerializeField] StationQuizPanelUI _quizPanel;
+    [SerializeField] StationBuildDestroyManager _buildDestroyManager;
 
     [Header("Long Press Settings")]
     [SerializeField] float _longPressDuration = 0.5f;
@@ -62,7 +63,9 @@ public class ObjectInteractionManager : MonoBehaviour
 
         bool isQuizPanelOpen = _quizPanel != null && _quizPanel.IsOpen;
 
-        if (isCraftingPanelOpen || isQuizPanelOpen)
+        bool isStation03PanelOpen = _buildDestroyManager != null && _buildDestroyManager.IsOpen;
+
+        if (isCraftingPanelOpen || isQuizPanelOpen || isStation03PanelOpen)
         {
             ResetPress();
             return;
@@ -78,13 +81,21 @@ public class ObjectInteractionManager : MonoBehaviour
 
                 if (tapDuration < _longPressDuration && tapMovement <= _maxMovementPixels)
                 {
-                    bool opened = false;
+                    if (_buildDestroyManager != null && _buildDestroyManager.IsDestroyMode)
+                        _buildDestroyManager.TryDestroyObject(_candidateObject);
+                    else
+                    {
+                        bool opened = false;
 
-                    if (_craftingPanel != null)
-                        opened = _craftingPanel.OpenFor(_candidateObject);
+                        if (_craftingPanel != null)
+                            opened = _craftingPanel.OpenFor(_candidateObject);
 
-                    if (!opened && _quizPanel != null)
-                        _quizPanel.OpenFor(_candidateObject);
+                        if (!opened && _quizPanel != null)
+                            opened = _quizPanel.OpenFor(_candidateObject);
+
+                        if (!opened && _buildDestroyManager != null)
+                            _buildDestroyManager.OpenFor(_candidateObject);
+                    }
                 }
             }
 
@@ -94,6 +105,9 @@ public class ObjectInteractionManager : MonoBehaviour
 
         if (_placementManager.IsPlacing)
         {
+            if (_buildDestroyManager != null && _buildDestroyManager.IsDestroyMode)
+                _buildDestroyManager.CancelDestroyMode();
+
             _candidateObject = null;
             _wasPressed = true;
             return;
@@ -121,6 +135,12 @@ public class ObjectInteractionManager : MonoBehaviour
 
         if (holdTime >= _longPressDuration)
         {
+            if (_buildDestroyManager != null && _buildDestroyManager.IsDestroyMode)
+            {
+                _candidateObject = null;
+                return;
+            }
+
             _selectedObject = _candidateObject;
             _candidateObject = null;
 

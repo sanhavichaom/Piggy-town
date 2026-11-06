@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d7a68d6b5152904a85a3e5f59489671, type: 3}
+  m_Name: Station_03
+  m_EditorClassIdentifier: Assembly-CSharp::PlaceableObjectData
+  _id: Station.03
+  _displayName: Wooden Board
+  _category: 1
+  _sprite: {fileID: 6937817954938267909, guid: f5861413a3e0b5740bf1e1e2d7edbaf6, type: 3}
+  _footprint: {x: 1, y: 9}
+  _visualOffset: {x: 0, y: 1.2}
+  _visualScale: 1
