@@ -16,6 +16,6 @@ MonoBehaviour:
   _displayName: Food Shop
   _category: 1
   _sprite: {fileID: 9180251791023625898, guid: 836df0e3bc9b86548bf77907df6ac615, type: 3}
-  _footprint: {x: 8, y: 8}
-  _visualOffset: {x: 0, y: 2.5}
+  _footprint: {x: 10, y: 10}
+  _visualOffset: {x: 0, y: 1.5}
   _visualScale: 1

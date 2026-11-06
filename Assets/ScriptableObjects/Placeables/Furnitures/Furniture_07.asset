@@ -16,6 +16,6 @@ MonoBehaviour:
   _displayName: Sofa
   _category: 0
   _sprite: {fileID: 7028616704906629411, guid: f76b111cdc3e5814094854f7f6f44519, type: 3}
-  _footprint: {x: 4, y: 4}
-  _visualOffset: {x: 0, y: 0}
+  _footprint: {x: 7, y: 7}
+  _visualOffset: {x: 0, y: 0.5}
   _visualScale: 1

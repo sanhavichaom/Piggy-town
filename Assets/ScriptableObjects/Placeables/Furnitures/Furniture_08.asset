@@ -16,6 +16,6 @@ MonoBehaviour:
   _displayName: Bed
   _category: 0
   _sprite: {fileID: 8288426215254106694, guid: 6af122eda05845c438efaea64fb84804, type: 3}
-  _footprint: {x: 8, y: 5}
-  _visualOffset: {x: 0, y: 0}
+  _footprint: {x: 6, y: 6}
+  _visualOffset: {x: 0, y: 0.5}
   _visualScale: 1

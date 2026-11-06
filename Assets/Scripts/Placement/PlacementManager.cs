@@ -54,6 +54,9 @@ public class PlacementManager : MonoBehaviour
     Vector2 _selectionPointerPosition;
     bool _ignoreSelectionPointer;
 
+    bool _wasPressing;
+    bool _canDragThisPress;
+
     // Methods
 
     void Start()
@@ -94,45 +97,95 @@ public class PlacementManager : MonoBehaviour
     void Update()
     {
         if (!_isReady || !_isPlacing)
+        {
+            _wasPressing = false;
+            _canDragThisPress = false;
             return;
+        }
 
         Pointer pointer = Pointer.current;
 
         if (pointer == null)
+            return;
+
+        bool isTouch = pointer is Touchscreen;
+        bool isPressed;
+        Vector2 screenPosition;
+
+        if (pointer is Touchscreen touchscreen)
         {
-            HidePreview();
-            return;
+            isPressed = touchscreen.primaryTouch.press.isPressed;
+            screenPosition = touchscreen.primaryTouch.position.ReadValue();
         }
-
-        if (pointer is Touchscreen touchscreen && !touchscreen.primaryTouch.press.isPressed)
-            return;
-
-        Vector2 screenPosition = pointer.position.ReadValue();
+        else
+        {
+            isPressed = pointer.press.isPressed;
+            screenPosition = pointer.position.ReadValue();
+        }
 
         if (_ignoreSelectionPointer)
         {
-            float pointerMovement = Vector2.Distance(_selectionPointerPosition, screenPosition);
+            float movement = Vector2.Distance(_selectionPointerPosition, screenPosition);
 
-            if (pointerMovement < 12f)
+            if (movement < 12f)
+            {
+                if (!isPressed)
+                {
+                    _wasPressing = false;
+                    _canDragThisPress = false;
+                }
+
                 return;
+            }
 
             _ignoreSelectionPointer = false;
         }
 
-        if (_placementPanel.gameObject.activeInHierarchy && RectTransformUtility.RectangleContainsScreenPoint(_placementPanel, screenPosition))
-            return;
-
-        if (_placementControls.IsPointerOverButtons(screenPosition))
-            return;
-
-        if (!_gameCamera.pixelRect.Contains(screenPosition))
+        if (!isPressed)
         {
-            HidePreview();
+            _wasPressing = false;
+            _canDragThisPress = false;
+
+            if (!isTouch && CanBeginDrag(screenPosition))
+                UpdatePreview(screenPosition);
+
             return;
         }
 
+        if (!_wasPressing)
+        {
+            _wasPressing = true;
+            _canDragThisPress = CanBeginDrag(screenPosition);
+        }
+
+        if (!_canDragThisPress)
+            return;
+
+        if (!_gameCamera.pixelRect.Contains(screenPosition))
+            return;
+
         UpdatePreview(screenPosition);
     }
+
+    bool CanBeginDrag(Vector2 screenPosition)
+    {
+        if (!_gameCamera.pixelRect.Contains(screenPosition))
+            return false;
+
+        if (_placementPanel.gameObject.activeInHierarchy &&
+            RectTransformUtility.RectangleContainsScreenPoint(
+                _placementPanel,
+                screenPosition))
+        {
+            return false;
+        }
+
+        if (_placementControls.IsPointerOverButtons(screenPosition))
+            return false;
+
+        return true;
+    }
+
 
     void UpdatePreview(Vector2 screenPosition)
     {
@@ -143,10 +196,7 @@ public class PlacementManager : MonoBehaviour
         Vector3Int tileCell = _floorTilemap.WorldToCell(worldPosition);
 
         if (!_floorTilemap.HasTile(tileCell))
-        {
-            HidePreview();
             return;
-        }
 
         Vector2Int originCell = new Vector2Int(tileCell.x, tileCell.y);
 
@@ -318,6 +368,9 @@ public class PlacementManager : MonoBehaviour
         else
             _ignoreSelectionPointer = false;
 
+        _wasPressing = false;
+        _canDragThisPress = false;
+
         ShowInitialPreview();
     }
 
@@ -348,6 +401,9 @@ public class PlacementManager : MonoBehaviour
         RefreshPreviewAtCell(placedObject.OriginCell);
 
         SetPlacementPanelVisible(false);
+
+        _wasPressing = false;
+        _canDragThisPress = false;
     }
 
     public void CancelPlacement()

@@ -16,6 +16,6 @@ MonoBehaviour:
   _displayName: Lamp
   _category: 0
   _sprite: {fileID: 6937817954938267909, guid: b549f92992d59084b88c6d5685cca392, type: 3}
-  _footprint: {x: 1, y: 1}
-  _visualOffset: {x: 0, y: 0}
+  _footprint: {x: 2, y: 2}
+  _visualOffset: {x: 0, y: 1.5}
   _visualScale: 1

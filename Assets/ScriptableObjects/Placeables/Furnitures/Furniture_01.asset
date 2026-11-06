@@ -16,6 +16,6 @@ MonoBehaviour:
   _displayName: Fence
   _category: 0
   _sprite: {fileID: -855298285791758126, guid: 735caef8e56efb546b4b008b0a13ce49, type: 3}
-  _footprint: {x: 8, y: 5}
-  _visualOffset: {x: 0, y: 0}
+  _footprint: {x: 2, y: 5}
+  _visualOffset: {x: 0, y: 0.25}
   _visualScale: 1
