@@ -11,6 +11,7 @@ public class IsometricCameraFitter : MonoBehaviour
     // Enums
 
     // Variables
+
     [Header("References")]
     [SerializeField] Tilemap _floorTilemap;
 

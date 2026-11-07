@@ -37,15 +37,10 @@ public class StationCraftingPanelUI : MonoBehaviour
 
     void Awake()
     {
-        if (_stationData == null ||
-            _craftingManager == null ||
-            _inventoryManager == null ||
-            _recipeText == null ||
-            _inventoryText == null ||
-            _statusText == null ||
-            _timerText == null ||
-            _startButton == null ||
-            _closeButton == null)
+        if (_stationData == null || _craftingManager == null ||
+            _inventoryManager == null || _recipeText == null ||
+            _inventoryText == null || _statusText == null || _timerText == null ||
+            _startButton == null || _closeButton == null)
         {
             Debug.LogError("Station Crafting Panel references are missing.", this);
             enabled = false;
@@ -111,9 +106,9 @@ public class StationCraftingPanelUI : MonoBehaviour
             return;
         }
 
-        _recipeText.text = recipe.InputItem1.DisplayName + " x" + recipe.InputAmount1 + " + " + recipe.InputItem2.DisplayName + " x" + recipe.InputAmount2 + " = " + recipe.OutputItem.DisplayName + " x" + recipe.OutputAmount;
+        _recipeText.text = "Recipe : " + recipe.InputItem1.DisplayName + " x" + recipe.InputAmount1 + " + " + recipe.InputItem2.DisplayName + " x" + recipe.InputAmount2 + " = " + recipe.OutputItem.DisplayName + " x" + recipe.OutputAmount;
 
-        _inventoryText.text = recipe.InputItem1.DisplayName + ": " + _inventoryManager.GetAmount(recipe.InputItem1) + "\n" + recipe.InputItem2.DisplayName + ": " + _inventoryManager.GetAmount(recipe.InputItem2) + "\n" + recipe.OutputItem.DisplayName + ": " + _inventoryManager.GetAmount(recipe.OutputItem);
+        _inventoryText.text = "Inventory :  " + "\n" + recipe.InputItem1.DisplayName + ": " + _inventoryManager.GetAmount(recipe.InputItem1) + "\n" + recipe.InputItem2.DisplayName + ": " + _inventoryManager.GetAmount(recipe.InputItem2) + "\n" + recipe.OutputItem.DisplayName + ": " + _inventoryManager.GetAmount(recipe.OutputItem);
 
         int seconds;
 

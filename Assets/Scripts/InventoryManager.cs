@@ -51,6 +51,7 @@ public class InventoryManager : MonoBehaviour
     string _craftEndUtcTicks = "";
     bool _isReady;
 
+    public event Action InventoryChanged;
 
     public long CraftEndUtcTicks
     {
@@ -195,6 +196,8 @@ public class InventoryManager : MonoBehaviour
 
             PlayerPrefs.SetString(SAVE_KEY, json);
             PlayerPrefs.Save();
+
+            InventoryChanged?.Invoke();
         }
         catch (Exception exception)
         {
